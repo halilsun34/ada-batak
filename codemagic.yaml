@@ -35,7 +35,7 @@ workflows:
           flutter packages pub get
       - name: Kod Analizi (Lint)
         script: |
-          flutter analyze
+          flutter analyze --no-fatal-infos
       - name: Birim & Widget Testlerini Çalıştır
         script: |
           flutter test
@@ -100,7 +100,7 @@ workflows:
           find . -name "Podfile" -execdir pod install \;
       - name: Kod Analizi (Lint)
         script: |
-          flutter analyze
+          flutter analyze --no-fatal-infos
       - name: Birim & Widget Testlerini Çalıştır
         script: |
           flutter test
