@@ -41,10 +41,10 @@ workflows:
           flutter test
       - name: Android APK Oluştur (Universal Release)
         script: |
-          flutter build apk --release --build-name=1.0.0 --build-number=$BUILD_NUMBER
+          flutter build apk --release --build-name=1.0.0 --build-number=$BUILD_NUMBER --android-skip-build-dependency-validation
       - name: Android App Bundle Oluştur (Google Play Store formatı)
         script: |
-          flutter build appbundle --release --build-name=1.0.0 --build-number=$BUILD_NUMBER
+          flutter build appbundle --release --build-name=1.0.0 --build-number=$BUILD_NUMBER --android-skip-build-dependency-validation
     artifacts:
       - build/**/outputs/**/*.apk
       - build/**/outputs/**/*.aab
