@@ -8,7 +8,7 @@ workflows:
   android-workflow:
     name: Ada Batak - Android Release
     max_build_duration: 60
-    instance_type: linux
+    instance_type: mac_mini_m2
     environment:
       flutter: stable
       java: 17
@@ -68,7 +68,7 @@ workflows:
   ios-workflow:
     name: Ada Batak - iOS Release
     max_build_duration: 60
-    instance_type: mac_mini_m1
+    instance_type: mac_mini_m2
     environment:
       flutter: stable
       xcode: latest
