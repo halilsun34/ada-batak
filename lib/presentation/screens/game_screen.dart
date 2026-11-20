@@ -311,7 +311,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
                   // Durum bilgi şeridi (ör. Herkes pas geçti / İhaleyi kim aldı)
                   if (gameState.statusBanner != null)
                     Positioned(
-                      top: 52,
+                      top: northPlayer != null ? 84.0 : 48.0,
                       left: 44,
                       right: 44,
                       child: IgnorePointer(
