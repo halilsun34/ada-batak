@@ -14,6 +14,7 @@ class SettingsModal extends StatelessWidget {
   final VoidCallback onCycleTargetRounds;
   final VoidCallback onToggleDifficulty;
   final VoidCallback onToggleTrumpRule;
+  final VoidCallback? onToggleGameSpeed;
   final VoidCallback onSwitchTheme;
   final VoidCallback onClose;
 
@@ -28,6 +29,7 @@ class SettingsModal extends StatelessWidget {
     required this.onCycleTargetRounds,
     required this.onToggleDifficulty,
     required this.onToggleTrumpRule,
+    this.onToggleGameSpeed,
     required this.onSwitchTheme,
     required this.onClose,
   });
@@ -224,7 +226,7 @@ class SettingsModal extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
 
-                // Satır 2: Ses & Bitiş Tur Sayısı
+                // Satır 2: Ses & Oyun Hızı
                 Row(
                   children: [
                     Expanded(
@@ -243,6 +245,22 @@ class SettingsModal extends StatelessWidget {
                     const SizedBox(width: 8),
                     Expanded(
                       child: _AdaOptionTile(
+                        key: const Key('toggle_game_speed_button'),
+                        icon: Icons.speed_rounded,
+                        label: 'HIZ: ${settings.gameSpeed.label}',
+                        accentColor: const Color(0xFFFFA726),
+                        onTap: onToggleGameSpeed ?? () {},
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+
+                // Satır 3: Bitiş Tur Sayısı & Bot Zorluğu
+                Row(
+                  children: [
+                    Expanded(
+                      child: _AdaOptionTile(
                         key: const Key('cycle_target_rounds_button'),
                         icon: Icons.flag_rounded,
                         label: 'BİTİŞ : ${settings.targetRounds}',
@@ -250,13 +268,7 @@ class SettingsModal extends StatelessWidget {
                         onTap: onCycleTargetRounds,
                       ),
                     ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-
-                // Satır 3: Bot Zorluğu & Koz Kuralı
-                Row(
-                  children: [
+                    const SizedBox(width: 8),
                     Expanded(
                       child: _AdaOptionTile(
                         key: const Key('toggle_difficulty_button'),
@@ -266,14 +278,20 @@ class SettingsModal extends StatelessWidget {
                         onTap: onToggleDifficulty,
                       ),
                     ),
-                    const SizedBox(width: 8),
+                  ],
+                ),
+                const SizedBox(height: 8),
+
+                // Satır 4: Koz Kuralı
+                Row(
+                  children: [
                     Expanded(
                       child: _AdaOptionTile(
                         key: const Key('toggle_trump_rule_button'),
                         icon: Icons.shield_rounded,
                         label: settings.trumpRule == TrumpRule.alwaysSpades
-                            ? 'KOZ: MAÇA'
-                            : 'KOZ: SEÇMELİ',
+                            ? 'KOZ KURALI: MAÇA (KLASİK)'
+                            : 'KOZ KURALI: İHALEYİ ALAN SEÇER',
                         accentColor: const Color(0xFFAB47BC),
                         onTap: onToggleTrumpRule,
                       ),

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../domain/bot/bot_bidding_logic.dart';
 import '../domain/bot/bot_play_strategy.dart';
@@ -187,6 +188,7 @@ class GameNotifier extends Notifier<GameState> {
 
   void _playCardInternal(int playerIndex, PlayingCard card) {
     ref.read(audioServiceProvider).play(GameSoundEffect.cardPlay);
+    HapticFeedback.lightImpact();
     final player = state.players[playerIndex];
     final nextHand = List<PlayingCard>.from(player.hand)..remove(card);
 
@@ -216,11 +218,16 @@ class GameNotifier extends Notifier<GameState> {
         playedCardsInRound: nextPlayedSet,
       );
 
+      final isFast = ref.read(settingsProvider).gameSpeed == GameSpeed.fast;
+      final t1 = isFast ? const Duration(milliseconds: 320) : const Duration(milliseconds: 620);
+      final t2 = isFast ? const Duration(milliseconds: 160) : const Duration(milliseconds: 280);
+
       _trickCollectTimer?.cancel();
-      _trickCollectTimer = Timer(const Duration(milliseconds: 620), () {
+      _trickCollectTimer = Timer(t1, () {
         ref.read(audioServiceProvider).play(GameSoundEffect.trickWin);
+        HapticFeedback.mediumImpact();
         state = state.copyWith(collectingWinnerSeat: winningEntry.seat);
-        _trickCollectTimer = Timer(const Duration(milliseconds: 280), () {
+        _trickCollectTimer = Timer(t2, () {
           _completeTrickCollection(winningEntry.playerId);
         });
       });
@@ -441,8 +448,11 @@ class GameNotifier extends Notifier<GameState> {
     if (!state.currentPlayer.isBot) return;
     if (state.collectingWinnerSeat != null) return;
 
-    // Botun düşünme süresi 0.5 - 1.2 sn arası rastgele
-    final delayMs = 500 + _random.nextInt(701);
+    final isFast = ref.read(settingsProvider).gameSpeed == GameSpeed.fast;
+    // Hızlı modda 180-330 ms, normal modda 480-880 ms
+    final delayMs = isFast
+        ? (180 + _random.nextInt(151))
+        : (480 + _random.nextInt(401));
 
     if (state.phase == GamePhase.bidding) {
       _botTimer = Timer(Duration(milliseconds: delayMs), _executeBotBid);

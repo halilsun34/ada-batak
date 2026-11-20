@@ -62,6 +62,18 @@ enum TrumpRule {
       : TrumpRule.alwaysSpades;
 }
 
+/// Oyun akış hızı (Normal / Hızlı)
+enum GameSpeed {
+  normal('NORMAL'),
+  fast('HIZLI');
+
+  final String label;
+  const GameSpeed(this.label);
+
+  GameSpeed get toggled =>
+      this == GameSpeed.normal ? GameSpeed.fast : GameSpeed.normal;
+}
+
 /// Cihazda shared_preferences ile saklanan tüm oyun ayarları.
 class GameSettings {
   final GameMode gameMode;
@@ -73,6 +85,7 @@ class GameSettings {
   final TableThemeType tableTheme;
   final TrumpRule trumpRule;
   final bool mustBreakTrump;
+  final GameSpeed gameSpeed;
 
   const GameSettings({
     this.gameMode = GameMode.ihaleli,
@@ -84,6 +97,7 @@ class GameSettings {
     this.tableTheme = TableThemeType.emeraldGreen,
     this.trumpRule = TrumpRule.alwaysSpades,
     this.mustBreakTrump = true,
+    this.gameSpeed = GameSpeed.normal,
   });
 
   static const List<int> availableTargetRounds = [3, 5, 7, 10, 15];
@@ -106,6 +120,7 @@ class GameSettings {
     TableThemeType? tableTheme,
     TrumpRule? trumpRule,
     bool? mustBreakTrump,
+    GameSpeed? gameSpeed,
   }) {
     return GameSettings(
       gameMode: gameMode ?? this.gameMode,
@@ -117,6 +132,7 @@ class GameSettings {
       tableTheme: tableTheme ?? this.tableTheme,
       trumpRule: trumpRule ?? this.trumpRule,
       mustBreakTrump: mustBreakTrump ?? this.mustBreakTrump,
+      gameSpeed: gameSpeed ?? this.gameSpeed,
     );
   }
 
@@ -133,7 +149,8 @@ class GameSettings {
           difficulty == other.difficulty &&
           tableTheme == other.tableTheme &&
           trumpRule == other.trumpRule &&
-          mustBreakTrump == other.mustBreakTrump;
+          mustBreakTrump == other.mustBreakTrump &&
+          gameSpeed == other.gameSpeed;
 
   @override
   int get hashCode => Object.hash(
@@ -146,5 +163,6 @@ class GameSettings {
         tableTheme,
         trumpRule,
         mustBreakTrump,
+        gameSpeed,
       );
 }

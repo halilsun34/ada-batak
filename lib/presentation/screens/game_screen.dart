@@ -7,12 +7,14 @@ import '../../domain/models/game_settings.dart';
 import '../../domain/models/player.dart';
 import '../../domain/models/playing_card.dart';
 import '../theme/table_theme.dart';
+import '../widgets/bidding_bubble_widget.dart';
 import '../widgets/bidding_panel.dart';
 import '../widgets/bury_cards_panel.dart';
 import '../widgets/center_trick_area.dart';
 import '../widgets/fanned_hand_widget.dart';
 import '../widgets/felt_table_background.dart';
 import '../widgets/how_to_play_modal.dart';
+import '../widgets/opponent_cards_widget.dart';
 import '../widgets/scoreboard_modal.dart';
 import '../widgets/settings_modal.dart';
 import '../widgets/wooden_player_badge.dart';
@@ -132,14 +134,29 @@ class _GameScreenState extends ConsumerState<GameScreen> {
                   if (northPlayer != null)
                     Align(
                       alignment: Alignment.topCenter,
-                      child: WoodenPlayerBadge(
-                        key: const Key('badge_north'),
-                        player: northPlayer,
-                        isCurrentTurn:
-                            gameState.currentPlayer.seat == PlayerSeat.north,
-                        isBidWinner: gameState.bidWinnerIndex == northPlayer.id,
-                        statusSubtitle: gameState.badgeSubtitleFor(northPlayer),
-                        theme: tableTheme,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          WoodenPlayerBadge(
+                            key: const Key('badge_north'),
+                            player: northPlayer,
+                            isCurrentTurn:
+                                gameState.currentPlayer.seat == PlayerSeat.north,
+                            isBidWinner: gameState.bidWinnerIndex == northPlayer.id,
+                            statusSubtitle: gameState.badgeSubtitleFor(northPlayer),
+                            theme: tableTheme,
+                          ),
+                          if (gameState.phase == GamePhase.bidding)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 2),
+                              child: BiddingBubbleWidget(player: northPlayer),
+                            )
+                          else if (gameState.phase == GamePhase.playing)
+                            OpponentCardsWidget(
+                              player: northPlayer,
+                              theme: tableTheme,
+                            ),
+                        ],
                       ),
                     ),
 
@@ -147,14 +164,35 @@ class _GameScreenState extends ConsumerState<GameScreen> {
                   if (westPlayer != null)
                     Align(
                       alignment: const Alignment(-1.0, -0.22),
-                      child: WoodenPlayerBadge(
-                        key: const Key('badge_west'),
-                        player: westPlayer,
-                        isCurrentTurn:
-                            gameState.currentPlayer.seat == PlayerSeat.west,
-                        isBidWinner: gameState.bidWinnerIndex == westPlayer.id,
-                        statusSubtitle: gameState.badgeSubtitleFor(westPlayer),
-                        theme: tableTheme,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          WoodenPlayerBadge(
+                            key: const Key('badge_west'),
+                            player: westPlayer,
+                            isCurrentTurn:
+                                gameState.currentPlayer.seat == PlayerSeat.west,
+                            isBidWinner: gameState.bidWinnerIndex == westPlayer.id,
+                            statusSubtitle: gameState.badgeSubtitleFor(westPlayer),
+                            theme: tableTheme,
+                          ),
+                          Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if (gameState.phase == GamePhase.bidding)
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 4, bottom: 4),
+                                  child: BiddingBubbleWidget(player: westPlayer),
+                                ),
+                              if (gameState.phase == GamePhase.playing)
+                                OpponentCardsWidget(
+                                  player: westPlayer,
+                                  theme: tableTheme,
+                                ),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
 
@@ -162,14 +200,35 @@ class _GameScreenState extends ConsumerState<GameScreen> {
                   if (eastPlayer != null)
                     Align(
                       alignment: const Alignment(1.0, -0.22),
-                      child: WoodenPlayerBadge(
-                        key: const Key('badge_east'),
-                        player: eastPlayer,
-                        isCurrentTurn:
-                            gameState.currentPlayer.seat == PlayerSeat.east,
-                        isBidWinner: gameState.bidWinnerIndex == eastPlayer.id,
-                        statusSubtitle: gameState.badgeSubtitleFor(eastPlayer),
-                        theme: tableTheme,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              if (gameState.phase == GamePhase.bidding)
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 4, bottom: 4),
+                                  child: BiddingBubbleWidget(player: eastPlayer),
+                                ),
+                              if (gameState.phase == GamePhase.playing)
+                                OpponentCardsWidget(
+                                  player: eastPlayer,
+                                  theme: tableTheme,
+                                ),
+                            ],
+                          ),
+                          WoodenPlayerBadge(
+                            key: const Key('badge_east'),
+                            player: eastPlayer,
+                            isCurrentTurn:
+                                gameState.currentPlayer.seat == PlayerSeat.east,
+                            isBidWinner: gameState.bidWinnerIndex == eastPlayer.id,
+                            statusSubtitle: gameState.badgeSubtitleFor(eastPlayer),
+                            theme: tableTheme,
+                          ),
+                        ],
                       ),
                     ),
 
@@ -392,7 +451,12 @@ class _GameScreenState extends ConsumerState<GameScreen> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        if (southPlayer != null)
+                        if (southPlayer != null) ...[
+                          if (gameState.phase == GamePhase.bidding)
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 2),
+                              child: BiddingBubbleWidget(player: southPlayer),
+                            ),
                           WoodenPlayerBadge(
                             key: const Key('badge_south'),
                             player: southPlayer,
@@ -404,6 +468,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
                                 gameState.badgeSubtitleFor(southPlayer),
                             theme: tableTheme,
                           ),
+                        ],
                         _BottomWoodDeckArea(
                           height: bottomDeckHeight,
                           theme: tableTheme,
@@ -479,6 +544,11 @@ class _GameScreenState extends ConsumerState<GameScreen> {
                                 ref
                                     .read(settingsProvider.notifier)
                                     .toggleTrumpRule();
+                              },
+                              onToggleGameSpeed: () {
+                                ref
+                                    .read(settingsProvider.notifier)
+                                    .toggleGameSpeed();
                               },
                               onSwitchTheme: () {
                                 ref

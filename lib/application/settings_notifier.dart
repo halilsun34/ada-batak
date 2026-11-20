@@ -17,6 +17,7 @@ class SettingsNotifier extends Notifier<GameSettings> {
   static const _kTableTheme = 'batak_table_theme';
   static const _kTrumpRule = 'batak_trump_rule';
   static const _kMustBreakTrump = 'batak_must_break_trump';
+  static const _kGameSpeed = 'batak_game_speed';
 
   @override
   GameSettings build() {
@@ -30,6 +31,7 @@ class SettingsNotifier extends Notifier<GameSettings> {
     final diffIdx = prefs.getInt(_kDifficulty) ?? 1;
     final themeIdx = prefs.getInt(_kTableTheme) ?? 0;
     final trumpIdx = prefs.getInt(_kTrumpRule) ?? 0;
+    final speedIdx = prefs.getInt(_kGameSpeed) ?? 0;
 
     return GameSettings(
       gameMode: GameMode.values[modeIdx.clamp(0, GameMode.values.length - 1)],
@@ -45,6 +47,8 @@ class SettingsNotifier extends Notifier<GameSettings> {
       trumpRule:
           TrumpRule.values[trumpIdx.clamp(0, TrumpRule.values.length - 1)],
       mustBreakTrump: prefs.getBool(_kMustBreakTrump) ?? true,
+      gameSpeed:
+          GameSpeed.values[speedIdx.clamp(0, GameSpeed.values.length - 1)],
     );
   }
 
@@ -61,6 +65,7 @@ class SettingsNotifier extends Notifier<GameSettings> {
     await prefs.setInt(_kTableTheme, next.tableTheme.index);
     await prefs.setInt(_kTrumpRule, next.trumpRule.index);
     await prefs.setBool(_kMustBreakTrump, next.mustBreakTrump);
+    await prefs.setInt(_kGameSpeed, next.gameSpeed.index);
   }
 
   Future<void> setGameMode(GameMode mode) =>
@@ -89,4 +94,7 @@ class SettingsNotifier extends Notifier<GameSettings> {
 
   Future<void> toggleMustBreakTrump() =>
       _save(state.copyWith(mustBreakTrump: !state.mustBreakTrump));
+
+  Future<void> toggleGameSpeed() =>
+      _save(state.copyWith(gameSpeed: state.gameSpeed.toggled));
 }

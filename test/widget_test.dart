@@ -41,6 +41,8 @@ void main() {
       expect(settings.tableTheme.next, TableThemeType.royalBlue);
       expect(settings.targetRounds, 5);
       expect(settings.nextTargetRounds, 7);
+      expect(settings.gameSpeed, GameSpeed.normal);
+      expect(settings.gameSpeed.toggled, GameSpeed.fast);
     });
   });
 
@@ -391,6 +393,13 @@ void main() {
       await tester.pump();
       expect(find.text('BİTİŞ : 7'), findsOneWidget);
       expect(prefs.getInt('batak_target_rounds'), 7);
+
+      // Oyun hızını değiştir (NORMAL -> HIZLI)
+      expect(find.text('HIZ: NORMAL'), findsOneWidget);
+      await tester.tap(find.byKey(const Key('toggle_game_speed_button')));
+      await tester.pump();
+      expect(find.text('HIZ: HIZLI'), findsOneWidget);
+      expect(prefs.getInt('batak_game_speed'), 1);
 
       // Nasıl Oynanır ekranını aç
       await tester.ensureVisible(find.byKey(const Key('how_to_play_button')));
