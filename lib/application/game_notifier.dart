@@ -7,6 +7,7 @@ import '../domain/bot/bot_play_strategy.dart';
 import '../domain/models/bid.dart';
 import '../domain/models/deck.dart';
 import '../domain/models/game_settings.dart';
+import '../domain/models/player.dart';
 import '../domain/models/playing_card.dart';
 import '../domain/models/trick.dart';
 import '../domain/rules/move_validator.dart';
@@ -311,7 +312,7 @@ class GameNotifier extends Notifier<GameState> {
 
     if (nextSession.isComplete) {
       if (nextSession.allPassed) {
-        _redealAfterAllPass();
+        _assignForcedBidAfterAllPass(updatedPlayers, nextSession);
         return;
       }
 
@@ -423,24 +424,68 @@ class GameNotifier extends Notifier<GameState> {
     _scheduleBotTurnIfNeeded();
   }
 
-  void _redealAfterAllPass() {
-    final settings = ref.read(settingsProvider);
-    final nextStarter =
-        (state.biddingSession.startingPlayerIndex + 1) % state.players.length;
-    final scores = state.players.map((p) => p.totalScore).toList();
+  void _assignForcedBidAfterAllPass(
+    List<Player> updatedPlayers,
+    BiddingSession nextSession,
+  ) {
+    // Son konuşan oyuncu: (startingPlayerIndex + playerCount - 1) % playerCount
+    final lastPlayerIndex =
+        (nextSession.startingPlayerIndex + state.players.length - 1) %
+            state.players.length;
+    final forcedAmount =
+        state.gameMode == GameMode.gommeli3lu ? nextSession.minAllowedBid : 4;
 
-    state = GameState.initial(
-      targetRounds: settings.targetRounds,
-      gameMode: state.gameMode,
-      equalCardsOrder: settings.equalCardsOrder,
-      startingPlayerIndex: nextStarter,
-      currentRound: state.currentRound,
-      existingTotalScores: scores,
-    ).copyWith(
-      statusBanner: 'Herkes PAS geçti, el yeniden dağıtıldı!',
+    final winner = updatedPlayers[lastPlayerIndex].copyWith(
+      currentBid: forcedAmount,
+      hasPassedBid: false,
+    );
+    updatedPlayers[lastPlayerIndex] = winner;
+
+    final settings = ref.read(settingsProvider);
+
+    state = state.copyWith(
+      players: updatedPlayers,
+      biddingSession: nextSession,
+      bidWinnerIndex: lastPlayerIndex,
+      winningBid: forcedAmount,
+      currentTurnIndex: lastPlayerIndex,
     );
 
-    _scheduleBotTurnIfNeeded();
+    if (settings.trumpRule == TrumpRule.bidderChooses) {
+      if (winner.isBot) {
+        final chosenTrump = BotBiddingLogic.chooseBestTrump(winner.hand);
+        if (state.gameMode == GameMode.gommeli3lu) {
+          _transitionToBuryingCards(lastPlayerIndex, chosenTrump);
+        } else {
+          state = state.copyWith(
+            trumpSuit: chosenTrump,
+            phase: GamePhase.playing,
+            statusBanner:
+                'Herkes PAS geçti! İhale $forcedAmount ile ${winner.name}\'e kaldı (${chosenTrump.symbol})',
+          );
+          _scheduleBotTurnIfNeeded();
+        }
+      } else {
+        state = state.copyWith(
+          phase: GamePhase.choosingTrump,
+          statusBanner:
+              'Herkes PAS geçti! İhale $forcedAmount ile size kaldı. Koz seçin.',
+        );
+      }
+    } else {
+      if (state.gameMode == GameMode.gommeli3lu) {
+        _transitionToBuryingCards(lastPlayerIndex, CardSuit.spades);
+      } else {
+        state = state.copyWith(
+          trumpSuit: CardSuit.spades,
+          phase: GamePhase.playing,
+          statusBanner: winner.isBot
+              ? 'Herkes PAS geçti! İhale $forcedAmount ile ${winner.name}\'e kaldı • Koz: ♠ Maça'
+              : 'Herkes PAS geçti! İhale $forcedAmount ile size kaldı • Koz: ♠ Maça',
+        );
+        _scheduleBotTurnIfNeeded();
+      }
+    }
   }
 
   void _scheduleBotTurnIfNeeded() {

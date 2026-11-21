@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:batak_club/application/game_notifier.dart';
 import 'package:batak_club/application/game_state.dart';
 import 'package:batak_club/application/settings_notifier.dart';
 import 'package:batak_club/domain/bot/bot_bidding_logic.dart';
@@ -127,6 +128,19 @@ void main() {
 
       expect(session.isComplete, isTrue);
       expect(session.allPassed, isTrue);
+    });
+
+    testWidgets('Herkes PAS geçtiğinde son konuşan oyuncuya 4 ile kalır', (tester) async {
+      final container = ProviderContainer();
+      final notifier = container.read(gameProvider.notifier);
+      // İlk oyuncu (SİZ) pas geçer
+      notifier.submitUserPass();
+      expect(container.read(gameProvider).players[0].hasPassedBid, isTrue);
+
+      // Botların konuşmalarını ilerlet
+      await tester.pump(const Duration(milliseconds: 1500));
+      container.dispose();
+      await tester.pump(const Duration(milliseconds: 500));
     });
 
     test('Güçlü koz ve As içeren elde bot ihale teklifi verir', () {

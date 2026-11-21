@@ -14,9 +14,12 @@ class BidAction {
       BidAction._(playerId: playerId, isPass: true);
 
   factory BidAction.bid(int playerId, int amount) {
-    assert(amount >= 5 && amount <= 16, 'İhale 5 ile 16 arasında olmalıdır');
+    assert(amount >= 4 && amount <= 16, 'İhale 4 ile 16 arasında olmalıdır');
     return BidAction._(playerId: playerId, isPass: false, amount: amount);
   }
+
+  factory BidAction.forced(int playerId, int amount) =>
+      BidAction._(playerId: playerId, isPass: false, amount: amount);
 }
 
 /// İhale oturumu ve kuralları (saf Dart)
