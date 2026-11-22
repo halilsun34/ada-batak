@@ -1,0 +1,53 @@
+===================================================================
+ADA BATAK - GOOGLE PLAY STORE METİNLERİ VE BİLGİLERİ
+===================================================================
+
+[UYGULAMA ADI] (Maksimum 30 Karakter):
+Ada Batak - İnternetsiz Batak
+
+[KISA AÇIKLAMA] (Maksimum 80 Karakter):
+İnternetsiz, akıcı ve reklamsız klasik Türk Batak oyunu. Hemen oyna!
+
+[TAM AÇIKLAMA] (Google Play Store):
+Ada Batak ile klasik Türk Batak oyunu cebinizde! İnternet bağlantısına gerek kalmadan, tamamen çevrimdışı (offline) ve kesintisiz kart oyunu deneyimi yaşayın.
+
+Gelişmiş bot yapay zekası, özgün ahşap masa temaları ve gerçekçi kart mekaniği ile Batak keyfini doyasıya çıkarın.
+
+ÖNE ÇIKAN ÖZELLİKLER:
+• 100% İNTERNETSİZ: Metroda, uçakta, seyahatte; internet paketinizi harcamadan dilediğiniz her yerde oynayın.
+• 5 FARKLI OYUN MODU:
+  - İhaleli Batak (Klasik 4 kişilik ihale heyecanı)
+  - İhalesiz Batak (Koz Maça, en çok eli toplayan kazanır)
+  - Eşli Batak (Karşılıklı ortaklık stratejisi)
+  - Gömmeli 3'lü Batak (Yerden kart alma ve gömme taktiği)
+  - 3-5-8 Batak (Her tur değişen el hedefleri)
+• GELİŞMİŞ YAPAY ZEKA: Kolay ve Zor bot seviyeleriyle gerçek rakiplerle oynuyormuş gibi hissettiren zeki botlar.
+• ÖZGÜN & ŞIK TASARIM: Zümrüt Yeşili ve Kraliyet Mavisi keçe masa seçenekleri, pirinç detaylı ahşap plakalar ve özel tasarım kart grafikleri.
+• OYUN HIZI AYARI: Normal veya Hızlı mod seçenekleriyle oyun akışını kendi temponuza göre belirleyin.
+• GELENEKSEL KURAL: Herkes pas geçtiğinde ihale sonuncu oyuncuya 4 ile kalır, oyun bölünmez!
+• TAMAMEN ÜCRETSİZ & GÜVENLİ: Hiçbir kişisel veri toplanmaz, internet izni dahi istemez.
+
+Hemen Ada Batak'ı indirin, Batak ustalığınızı gösterin!
+
+===================================================================
+GOOGLE PLAY CONSOLE FORM CEVAPLARI REHBERİ:
+===================================================================
+
+1. VERİ GÜVENLİĞİ (DATA SAFETY):
+   - Uygulamanız herhangi bir kullanıcı verisi topluyor veya paylaşıyor mu? -> HAYIR (No)
+
+2. İÇERİK DERECELENDİRMESİ (CONTENT RATING):
+   - Kategori: Oyun (Game)
+   - Kumar veya gerçek parayla bahis var mı? -> HAYIR (No)
+   - Şiddet / Cinsellik / Uygunsuz dil var mı? -> HAYIR (No)
+   - Sonuç: PEGI 3 / Herkes için Uygun (Everyone)
+
+3. HEDEF KİTLE (TARGET AUDIENCE):
+   - 18 yaş ve üzeri (veya 13+) seçebilirsiniz.
+
+4. REKLAMLAR (ADS):
+   - Uygulamanız reklam içeriyor mu? -> HAYIR, uygulamam reklam içermiyor.
+
+5. GİZLİLİK POLİTİKASI (PRIVACY POLICY):
+   - URL: https://halilsun34.github.io/ada-batak/
+===================================================================
