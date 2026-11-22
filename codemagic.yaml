@@ -13,8 +13,6 @@ workflows:
       flutter: 3.38.3
       java: 17
       groups:
-        # Codemagic Web Arayüzünde (Environment variables) 'google_play' adında grup oluşturup
-        # GCLOUD_SERVICE_ACCOUNT_CREDENTIALS ekleyebilirsiniz (mağazaya otomatik yükleme için).
         - google_play
       vars:
         PACKAGE_NAME: "com.batakclub.batak_club"
@@ -24,9 +22,6 @@ workflows:
         - tag
       branch_patterns:
         - pattern: 'main'
-          include: true
-          source: true
-        - pattern: 'master'
           include: true
           source: true
     scripts:
@@ -52,43 +47,29 @@ workflows:
     publishing:
       email:
         recipients:
-          - halilsun34@gmail.com # Bildirim gönderilecek e-posta (isteğe bağlı)
+          - halilsun34@gmail.com
         notify:
           success: true
           failure: true
-      # İleride Google Play Console hesabınızı bağladığınızda aşağıdaki bloğu açabilirsiniz:
-      # google_play:
-      #   credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
-      #   track: internal # internal, alpha, beta, production
-      #   submit_as_draft: true
 
   # ===============================================================
   # 2. IOS WORKFLOW (IPA & Apple App Store / TestFlight)
   # ===============================================================
-  ios-workflow:
-    name: Ada Batak - iOS Release
+  ios-release:
+    name: Ada Batak - iOS (App Store)
     max_build_duration: 60
     instance_type: mac_mini_m2
+    integrations:
+      app_store_connect: Codemagic_AppStore_Key
     environment:
-      flutter: 3.38.3
+      flutter: stable
       xcode: latest
       cocoapods: default
-      groups:
-        # Codemagic Web Arayüzünde 'app_store_credentials' adında grup oluşturup
-        # APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_ISSUER_ID ve
-        # APP_STORE_CONNECT_PRIVATE_KEY ekleyebilirsiniz.
-        - app_store_credentials
-      vars:
-        BUNDLE_ID: "com.batakclub.batakClub"
     triggering:
       events:
         - push
-        - tag
       branch_patterns:
-        - pattern: 'main'
-          include: true
-          source: true
-        - pattern: 'master'
+        - pattern: main
           include: true
           source: true
     scripts:
@@ -104,15 +85,27 @@ workflows:
       - name: Birim & Widget Testlerini Çalıştır
         script: |
           flutter test
-      - name: iOS IPA Oluştur (Release)
+      - name: Apple sertifika ve profillerini otomatik oluştur ve uygula
         script: |
-          # İmza henüz eklenmemişse codesign olmadan IPA paketler,
-          # Codemagic üzerinde Apple sertifikası yüklendiğinde otomatik imzalar.
-          flutter build ipa --release --build-name=1.0.0 --build-number=$BUILD_NUMBER --export-options-plist=/Users/builder/export_options.plist || flutter build ios --release --no-codesign
+          keychain initialize
+          app-store-connect fetch-signing-files "com.batakclub.batakClub" \
+            --type IOS_APP_STORE \
+            --create \
+            --certificate-key=@file:$CM_BUILD_DIR/ios/ios_distribution_key.pem \
+            --issuer-id="6a7ed7d6-5947-41d2-bcde-d0be4c09750c" \
+            --key-id="M3F36N5DKP" \
+            --private-key=@file:$CM_BUILD_DIR/ios/AuthKey_M3F36N5DKP.p8
+          keychain add-certificates
+          xcode-project use-profiles
+      - name: iOS (.ipa) paketini derle
+        script: |
+          flutter build ipa --release \
+            --build-name=1.0.0 \
+            --build-number=$PROJECT_BUILD_NUMBER \
+            --export-options-plist=/Users/builder/export_options.plist
     artifacts:
       - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
-      - flutter_drive.log
     publishing:
       email:
         recipients:
@@ -120,8 +113,7 @@ workflows:
         notify:
           success: true
           failure: true
-      # İleride Apple Developer hesabınızı bağladığınızda aşağıdaki bloğu açabilirsiniz:
-      # app_store_connect:
-      #   auth: integration
-      #   submit_to_testflight: true
-      #   submit_to_app_store: false
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
+        submit_to_app_store: false
